@@ -29,4 +29,5 @@ def delete_blog(db:Session, blog:schema.BlogDelete):
     deleted_blog = db.query(models.Blogs).filter(models.Blogs.id == blog.id).first()
     db.delete(deleted_blog)
     db.commit()
-    return deleted_blog
+    delete = schema.BlogResponse(status="true")
+    return delete

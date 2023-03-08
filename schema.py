@@ -13,7 +13,10 @@ class BlogDelete(BaseModel):
 
 class BlogUpdate(Blogbase):
     id:int
-    
+
+class BlogResponse(BaseModel):
+    status:str
+
 class Blog(Blogbase):
     id: int
 

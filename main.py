@@ -38,7 +38,7 @@ def read_blogs(id:int, db : Session=Depends(get_db)):
 def update_blog(blog: schema.BlogUpdate, db: Session=Depends(get_db)):
     return crud.update_blog(db,blog)
 
-@app.delete("/blogs/{id}", response_model=schema.Blog)
+@app.delete("/blogs/{id}", response_model=schema.BlogResponse)
 def delete_blog(blog: schema.BlogDelete,db:Session=Depends(get_db)):
     return crud.delete_blog(db,blog)
     
