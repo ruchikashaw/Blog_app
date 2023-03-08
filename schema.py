@@ -8,8 +8,15 @@ class Blogbase(BaseModel):
 class BlogCreate(Blogbase):
     pass
 
+class BlogDelete(BaseModel):
+    id:int
+
+class BlogUpdate(Blogbase):
+    id:int
+    
 class Blog(Blogbase):
     id: int
 
     class Config:
         orm_mode = True
+
