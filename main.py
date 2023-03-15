@@ -19,7 +19,7 @@ def get_db():
 
 @app.post("/blogs", response_model=schema.Blog)
 def create_blog(blog: schema.BlogCreate, db: Session = Depends(get_db)):
-    return crud.create_blog(db=db, blog=blog)
+    return crud.create_blog(db, blog)
 
 
 @app.get("/blogs", response_model=list[schema.Blog])
@@ -27,7 +27,7 @@ def read_blogs(skip:int =0, limit:int = 100, db: Session = Depends(get_db)):
     blogs = crud.get_blogs(db=db,skip=skip,limit=limit)
     return blogs
 
-@app.get("/blogs/{id}", response_model=schema.Blog)
+@app.get("/blogs/{id}", response_model=schema.BlogCreateresponse)
 def read_blogs(id:int, db : Session=Depends(get_db)):
     db_blog = crud.get_blog(db,id)
     if db_blog is None:

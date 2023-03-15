@@ -4,8 +4,10 @@ import models,schema
 
 
 def get_blog(db: Session, blog_id: int):
-    return db.query(models.Blogs).filter(models.Blogs.id == blog_id).first()
-
+    data = db.query(models.Blogs).filter(models.Blogs.id == blog_id).first()
+    return schema.BlogCreateresponse(id=blog_id,data=schema.datablog(title=data.title,description=data.description))
+    # return schema.BlogCreateresponse(id=blog_id, data={"title":data.title,"description":data.description})
+    
 def get_blogs(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Blogs).offset(skip).limit(limit).all()
 
@@ -26,8 +28,7 @@ def update_blog(db:Session, blog: schema.BlogUpdate):
     return blog_update
 
 def delete_blog(db:Session, blog:schema.BlogDelete):
-    deleted_blog = db.query(models.Blogs).filter(models.Blogs.id == blog.id).first()
+    deleted_blog = db.query(models.Blogs).filter(models.Blogs.id == blog.del_id).first()
     db.delete(deleted_blog)
     db.commit()
-    delete = schema.BlogResponse(status="true")
-    return delete
+    return schema.BlogResponse(deleted_id=blog.del_id)

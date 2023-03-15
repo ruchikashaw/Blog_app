@@ -9,14 +9,22 @@ class BlogCreate(Blogbase):
     pass
 
 class BlogDelete(BaseModel):
-    id:int
+    del_id: int
 
 class BlogUpdate(Blogbase):
     id:int
 
 class BlogResponse(BaseModel):
-    status:str
+    deleted_id:int
 
+class datablog(BaseModel):
+    title:str
+    description:str
+
+class BlogCreateresponse(BaseModel):
+    id:int
+    data:datablog
+    
 class Blog(Blogbase):
     id: int
 
