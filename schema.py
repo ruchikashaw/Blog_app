@@ -24,10 +24,30 @@ class datablog(BaseModel):
 class BlogCreateresponse(BaseModel):
     id:int
     data:datablog
-    
+
 class Blog(Blogbase):
     id: int
 
     class Config:
         orm_mode = True
 
+class Userbase(BaseModel):
+    name: str
+    email:str
+
+class Usercreate(Userbase):
+    password:str
+    
+class UserloginRequest(BaseModel):
+    email:str
+    password:str
+
+class UserloginResponse(BaseModel):
+    name:str
+    token:str
+
+class User(Userbase):
+    id: int
+    
+    class Config:
+        orm_mode=True

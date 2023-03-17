@@ -42,8 +42,19 @@ def update_blog(blog: schema.BlogUpdate, db: Session=Depends(get_db)):
 def delete_blog(blog: schema.BlogDelete,db:Session=Depends(get_db)):
     return crud.delete_blog(db,blog)
     
+@app.post("/signup", response_model=schema.User)
+def create_user(user:schema.Usercreate,db:Session=Depends(get_db)):
+    return crud.create_user(db,user)
 
-
+@app.post("/login", response_model=schema.UserloginResponse)
+def login_user(user:schema.UserloginRequest,db:Session=Depends(get_db)):
+    db_user = crud.login_user(db,user)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    if db_user.password == user.password:
+        return schema.UserloginResponse(name=db_user.name,token=db_user.email)
+    else:
+        raise HTTPException(status_code=401, detail="Invalid Password")
 
 
 

@@ -7,7 +7,7 @@ def get_blog(db: Session, blog_id: int):
     data = db.query(models.Blogs).filter(models.Blogs.id == blog_id).first()
     return schema.BlogCreateresponse(id=blog_id,data=schema.datablog(title=data.title,description=data.description))
     # return schema.BlogCreateresponse(id=blog_id, data={"title":data.title,"description":data.description})
-    
+
 def get_blogs(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Blogs).offset(skip).limit(limit).all()
 
@@ -32,3 +32,14 @@ def delete_blog(db:Session, blog:schema.BlogDelete):
     db.delete(deleted_blog)
     db.commit()
     return schema.BlogResponse(deleted_id=blog.del_id)
+
+def create_user(db:Session, user:schema.Usercreate):
+    db_user = models.Users(name=user.name, email=user.email, password=user.password)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+def login_user(db:Session, user:schema.UserloginRequest):
+    db_user = db.query(models.Users).filter(models.Users.email==user.email).first()
+    return db_user
