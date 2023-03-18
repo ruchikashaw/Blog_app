@@ -55,6 +55,6 @@ def login_user(user:schema.UserloginRequest,db:Session=Depends(get_db)):
         return schema.UserloginResponse(name=db_user.name,token=db_user.email)
     else:
         raise HTTPException(status_code=401, detail="Invalid Password")
-
+    #jwt token will be added soon
 
 
