@@ -4,6 +4,7 @@ from pydantic import BaseModel
 class Blogbase(BaseModel):
     title: str
     description: Union[str,None] = None
+    
 
 class BlogCreate(Blogbase):
     pass
@@ -26,7 +27,8 @@ class BlogCreateresponse(BaseModel):
     data:datablog
 
 class Blog(Blogbase):
-    id: int
+    id:int
+    owner_id:int
 
     class Config:
         orm_mode = True

@@ -11,8 +11,8 @@ def get_blog(db: Session, blog_id: int):
 def get_blogs(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Blogs).offset(skip).limit(limit).all()
 
-def create_blog(db: Session, blog: schema.BlogCreate):
-    db_blog = models.Blogs(title=blog.title, description=blog.description)
+def create_blog(db: Session, blog: schema.BlogCreate, id:int):
+    db_blog = models.Blogs(title=blog.title, description=blog.description, owner_id=id)
     db.add(db_blog)
     db.commit()
     db.refresh(db_blog)
@@ -43,3 +43,6 @@ def create_user(db:Session, user:schema.Usercreate):
 def login_user(db:Session, user:schema.UserloginRequest):
     db_user = db.query(models.Users).filter(models.Users.email==user.email).first()
     return db_user
+
+def get_user(db:Session, skip: int=0, limit:int =0):
+    return db.query(models.Users).offset(skip).limit(limit).all()
