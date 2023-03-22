@@ -8,8 +8,9 @@ def get_blog(db: Session, blog_id: int):
     return schema.BlogCreateresponse(id=blog_id,data=schema.datablog(title=data.title,description=data.description))
     # return schema.BlogCreateresponse(id=blog_id, data={"title":data.title,"description":data.description})
 
-def get_blogs(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Blogs).offset(skip).limit(limit).all()
+def get_blogs(id:int,db:Session,skip: int = 0, limit: int = 100):
+    return db.query(models.Blogs).filter(models.Blogs.owner_id == id).offset(skip).limit(limit).all()
+
 
 def create_blog(db: Session, blog: schema.BlogCreate, id:int):
     db_blog = models.Blogs(title=blog.title, description=blog.description, owner_id=id)
@@ -46,3 +47,16 @@ def login_user(db:Session, user:schema.UserloginRequest):
 
 def get_user(db:Session, skip: int=0, limit:int =0):
     return db.query(models.Users).offset(skip).limit(limit).all()
+
+def create_comment(db:Session, comment:schema.CommentCreate,id:int):
+   comments = models.Comments(message=comment.message,blog_id=comment.blog_id,owner_id=id)
+   db.add(comments)
+   db.commit()
+   db.refresh(comments)
+   return schema.Comment(message=comments.message, blog_id=comments.blog_id, owner_id=id)
+
+def get_comments_by_blog_id(id:int,db:Session,skip:int=0,limit:int=100):
+    return db.query(models.Comments).filter(models.Comments.blog_id==id).offset(skip).limit(limit).all()
+
+def get_comments_by_user_id(user:int,db:Session,skip:int=0,limit:int=100):
+    return db.query(models.Comments).filter(models.Comments.owner_id==user).offset(skip).limit(limit).all()

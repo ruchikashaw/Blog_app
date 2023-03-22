@@ -5,12 +5,14 @@ import crud, models, schema
 from database import SessionLocal, engine
 import time
 import jwt
+from decouple import config
+
 models.Base.metadata.create_all(bind=engine)
-JWT_SECRET="hello"
-JWT_ALGORITHM="HS256"
+
 app = FastAPI()
 
-
+JWT_SECRET=config('JWT_SECRET')
+JWT_ALGORITHM=config('JWT_ALGORITHM')
 def createToken(userId):
     payload = {
         "Id": userId,
@@ -37,9 +39,10 @@ class JWTBearer(HTTPBearer):
         if credentials:
             if not credentials.scheme == "Bearer":
                 raise HTTPException(status_code=403, detail="Invalid authentication scheme.")
-            if not self.verify_jwt(credentials.credentials):
+            verified,payload = self.verify_jwt(credentials.credentials)
+            if not verified:
                 raise HTTPException(status_code=403, detail="Invalid token or expired token.")
-            return credentials.credentials
+            return payload['Id']
         else:
             raise HTTPException(status_code=403, detail="Invalid authorization code.")
         
@@ -51,7 +54,7 @@ class JWTBearer(HTTPBearer):
             payload = None
         if payload:
             istokenValid = True
-        return istokenValid
+        return istokenValid,payload
 
 
 
@@ -66,16 +69,17 @@ def get_db():
 
 
 @app.post("/blogs", response_model=schema.Blog)
-def create_blog(blog: schema.BlogCreate, token:str = Depends(JWTBearer()),db: Session = Depends(get_db)):
-    user = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-    id = user["Id"]
-    return crud.create_blog(db, blog, id)
+def create_blog(blog: schema.BlogCreate, user:str = Depends(JWTBearer()),db: Session = Depends(get_db)):
+    # user = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    # id = user["Id"]
+    return crud.create_blog(db, blog, user)
 
 
 
-@app.get("/blogs",dependencies=[Depends(JWTBearer())], response_model=list[schema.Blog])
-def read_blogs(skip:int =0, limit:int = 100, db: Session = Depends(get_db)):
-    blogs = crud.get_blogs(db=db,skip=skip,limit=limit)
+@app.get("/blogs", response_model=list[schema.Blog])
+def read_blogs(skip:int =0, limit:int = 100,user:str = Depends(JWTBearer()),  db: Session = Depends(get_db)):
+    print(user)
+    blogs = crud.get_blogs(user,skip=skip,limit=limit,db=db)
     return blogs
 
 @app.get("/blogs/{id}", response_model=schema.BlogCreateresponse)
@@ -112,3 +116,19 @@ def get_users(skip:int =0, limit:int=100,db:Session=Depends(get_db)):
     users = crud.get_user(db=db,skip=skip,limit=limit)
     return users
 
+@app.post("/comments", response_model=schema.Comment)
+def create_comment(comment:schema.CommentCreate,user:int = Depends(JWTBearer()),db:Session=Depends(get_db)):
+    print(user)
+    return crud.create_comment(db,comment,user)
+
+@app.get("/comments")
+def get_comment(id:int ,skip:int =0, limit:int=100,  db:Session=Depends(get_db)):
+    comments = crud.get_comments_by_blog_id(id,db,skip,limit)
+    print (comments)
+    return comments
+
+@app.get("/comments/user")
+def get_comment(user:str = Depends(JWTBearer()) ,skip:int =0, limit:int=100,  db:Session=Depends(get_db)):
+    comments = crud.get_comments_by_user_id(user,db,skip,limit)
+    print (comments)
+    return comments

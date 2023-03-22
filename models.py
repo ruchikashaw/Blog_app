@@ -12,6 +12,7 @@ class Blogs(Base):
     title = Column(String,unique=True,index=True)
     description = Column(String,index=True)
     owner_id = Column(Integer, ForeignKey("users.id"))
+    owner = relationship("Users", back_populates="blogs")
 
 class Users(Base):
     __tablename__ = "users"
@@ -20,7 +21,22 @@ class Users(Base):
     name = Column(String,index=True)
     email = Column(String, index=True, unique=True)
     password = Column(String,index=True)
+    blogs = relationship("Blogs", back_populates="owner")
+    comments = relationship("Comments", back_populates="owner")
 
+class Comments(Base):
+    __tablename__='comments'
 
-owner = relationship("Users", back_populates="blogs")
-    
+    id=Column(Integer, primary_key=True, index=True)
+    message=Column(String,index=True)
+    blog_id=Column(Integer, ForeignKey("blogs.id"), index=True)
+    owner_id=Column(Integer, ForeignKey("users.id"), index=True)
+    owner = relationship("Users", back_populates="comments")
+
+class Upvote(Base):
+    __tablename__='upvote'
+
+    id=Column(Integer, primary_key=True, index = True)
+    like=Column(String, index=True)
+    blog_id=Column(Integer,ForeignKey("blogs.id"), index=True)
+    owner_id=Column(Integer, ForeignKey("users.id"), index=True)

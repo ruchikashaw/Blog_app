@@ -53,3 +53,19 @@ class User(Userbase):
     
     class Config:
         orm_mode=True
+
+class CommentBase(BaseModel):
+    message: str
+
+class CommentCreate(CommentBase):
+    blog_id:int
+
+class CommentCreateResponse(CommentBase):
+    blog_id:int
+
+class Comment(CommentBase):
+    blog_id:int
+    owner_id:int
+
+    class config:
+        orm_mode:True
