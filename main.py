@@ -90,12 +90,12 @@ def read_blogs(id:int, db : Session=Depends(get_db)):
     return db_blog
 
 @app.put("/blogs/{id}",response_model=schema.Blog)
-def update_blog(blog: schema.BlogUpdate, db: Session=Depends(get_db)):
-    return crud.update_blog(db,blog)
+def update_blog(blog: schema.BlogUpdate, db: Session=Depends(get_db), user:int=Depends(JWTBearer())):
+    return crud.update_blog(db,blog,user)
 
-@app.delete("/blogs/{id}", response_model=schema.BlogResponse)
-def delete_blog(blog: schema.BlogDelete,db:Session=Depends(get_db)):
-    return crud.delete_blog(db,blog)
+@app.delete("/blogs/{id}", response_model=schema.Blog)
+def delete_blog(blog: schema.BlogDelete,db:Session=Depends(get_db), user:int = Depends(JWTBearer())):
+    return crud.delete_blog(db,blog,user)
     
 @app.post("/signup", response_model=schema.User)
 def create_user(user:schema.Usercreate,db:Session=Depends(get_db)):

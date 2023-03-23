@@ -19,20 +19,26 @@ def create_blog(db: Session, blog: schema.BlogCreate, id:int):
     db.refresh(db_blog)
     return db_blog
 
-def update_blog(db:Session, blog: schema.BlogUpdate):
-    blog_update = db.query(models.Blogs).filter(models.Blogs.id == blog.id).first()
-    if blog.title:
-        blog_update.title=blog.title
-    db.add(blog_update)
-    db.commit()
-    db.refresh(blog_update)
-    return blog_update
+def update_blog(db:Session, blog: schema.BlogUpdate, id:int):
+        blog_update = db.query(models.Blogs).filter(models.Blogs.id == blog.id).first()
+        if blog_update.owner_id==id:
+            if blog.title:
+                blog_update.title=blog.title
+            db.add(blog_update)
+            db.commit()
+            db.refresh(blog_update)
+        else:
+            raise HTTPException(status_code=404, detail="You are not the owner of the blog")
+        return blog_update
 
-def delete_blog(db:Session, blog:schema.BlogDelete):
+def delete_blog(db:Session, blog:schema.BlogDelete, id:int):
     deleted_blog = db.query(models.Blogs).filter(models.Blogs.id == blog.del_id).first()
-    db.delete(deleted_blog)
-    db.commit()
-    return schema.BlogResponse(deleted_id=blog.del_id)
+    if deleted_blog.owner_id==id:
+        db.delete(deleted_blog)
+        db.commit()
+    else:
+        raise HTTPException(status_code=404, detail="You are not the owner of the blog")
+    return deleted_blog
 
 def create_user(db:Session, user:schema.Usercreate):
     db_user = models.Users(name=user.name, email=user.email, password=user.password)
