@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-
+from fastapi import HTTPException
 import models,schema
 
 
@@ -49,6 +49,9 @@ def get_user(db:Session, skip: int=0, limit:int =0):
     return db.query(models.Users).offset(skip).limit(limit).all()
 
 def create_comment(db:Session, comment:schema.CommentCreate,id:int):
+   blog = db.query(models.Blogs).filter(models.Blogs.id == comment.blog_id).first()
+   if blog is None:
+         raise HTTPException(status_code=404, detail="Blog not found")
    comments = models.Comments(message=comment.message,blog_id=comment.blog_id,owner_id=id)
    db.add(comments)
    db.commit()
@@ -60,3 +63,24 @@ def get_comments_by_blog_id(id:int,db:Session,skip:int=0,limit:int=100):
 
 def get_comments_by_user_id(user:int,db:Session,skip:int=0,limit:int=100):
     return db.query(models.Comments).filter(models.Comments.owner_id==user).offset(skip).limit(limit).all()
+
+def create_upvote(upvotes:schema.Upvotecreate, user:int,db:Session):
+    blog = db.query(models.Blogs).filter(models.Blogs.id == upvotes.blog_id).first()
+    if blog is None:
+         raise HTTPException(status_code=404, detail="Blog not found")
+    db_upvote=db.query(models.blogUpvote).filter(models.blogUpvote.owner_id==user,models.blogUpvote.blog_id==blog.id).first()
+    if db_upvote is None:
+        dbs_upvote=models.blogUpvote(upvote=upvotes.upvote,blog_id=upvotes.blog_id,owner_id=user)
+        db.add(dbs_upvote)
+        db.commit()
+        db.refresh(dbs_upvote)
+    else:
+        if upvotes.upvote and upvotes.downvote:
+            raise HTTPException(status_code=404, detail="Downvote and Upvote cannot be same together")
+        db_upvote.upvote=upvotes.upvote
+        db_upvote.downvote=upvotes.downvote
+        db.add(db_upvote)
+        db.commit()
+        db.refresh(db_upvote)
+        
+    return schema.blogupvote(upvote=db_upvote.upvote,downvote=db_upvote.downvote,blog_id=db_upvote.blog_id, owner_id=user)

@@ -23,6 +23,7 @@ class Users(Base):
     password = Column(String,index=True)
     blogs = relationship("Blogs", back_populates="owner")
     comments = relationship("Comments", back_populates="owner")
+    blog_upvote= relationship("blogUpvote", back_populates="owner")
 
 class Comments(Base):
     __tablename__='comments'
@@ -33,10 +34,12 @@ class Comments(Base):
     owner_id=Column(Integer, ForeignKey("users.id"), index=True)
     owner = relationship("Users", back_populates="comments")
 
-class Upvote(Base):
-    __tablename__='upvote'
+class blogUpvote(Base):
+    __tablename__='blog_upvote'
 
     id=Column(Integer, primary_key=True, index = True)
-    like=Column(String, index=True)
+    upvote=Column(Boolean, index=True)
+    downvote=Column(Boolean, index=True)
     blog_id=Column(Integer,ForeignKey("blogs.id"), index=True)
     owner_id=Column(Integer, ForeignKey("users.id"), index=True)
+    owner = relationship("Users", back_populates="blog_upvote")

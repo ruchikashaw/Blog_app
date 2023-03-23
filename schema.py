@@ -69,3 +69,18 @@ class Comment(CommentBase):
 
     class config:
         orm_mode:True
+
+class Upvotebase(BaseModel):
+    upvote: Union[bool,None]=False
+    downvote: Union[bool,None]=False
+
+class Upvotecreate(Upvotebase):
+    blog_id:int
+
+class blogupvote(Upvotebase):
+    blog_id:int
+    owner_id:int
+    
+
+    class config:
+        orm_mode=True

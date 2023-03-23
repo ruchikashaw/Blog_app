@@ -132,3 +132,7 @@ def get_comment(user:str = Depends(JWTBearer()) ,skip:int =0, limit:int=100,  db
     comments = crud.get_comments_by_user_id(user,db,skip,limit)
     print (comments)
     return comments
+
+@app.post("/blogupvote", response_model=schema.blogupvote)
+def create_upvote(upvotes:schema.Upvotecreate,user:int=Depends(JWTBearer()), db:Session=Depends(get_db)):
+    return crud.create_upvote(upvotes,user,db)
