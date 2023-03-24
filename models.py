@@ -24,6 +24,7 @@ class Users(Base):
     blogs = relationship("Blogs", back_populates="owner")
     comments = relationship("Comments", back_populates="owner")
     blog_upvote= relationship("blogUpvote", back_populates="owner")
+    bookmark = relationship("Bookmark", back_populates="owner")
 
 class Comments(Base):
     __tablename__='comments'
@@ -46,3 +47,9 @@ class blogUpvote(Base):
 
 class Bookmark(Base):
     __tablename__='bookmark'
+
+    id=Column(Integer, primary_key=True, index=True)
+    Bookmark=Column(Boolean,index=True)
+    blog_id=Column(Integer, ForeignKey("blogs.id"), index= True) #The blog that want to bookmark
+    owner_id=Column(Integer, ForeignKey("users.id"),index=True) #the person who is bookmarking the blog
+    owner = relationship("Users", back_populates="bookmark")
