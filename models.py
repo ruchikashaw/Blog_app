@@ -43,3 +43,6 @@ class blogUpvote(Base):
     blog_id=Column(Integer,ForeignKey("blogs.id"), index=True)
     owner_id=Column(Integer, ForeignKey("users.id"), index=True)
     owner = relationship("Users", back_populates="blog_upvote")
+
+class Bookmark(Base):
+    __tablename__='bookmark'
