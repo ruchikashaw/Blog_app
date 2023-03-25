@@ -84,3 +84,13 @@ class blogupvote(Upvotebase):
 
     class config:
         orm_mode=True
+
+class bookmarkbase(BaseModel):
+    Bookmark: Union[bool, None]=None
+    blog_id: int
+
+class bookmarkCreate(bookmarkbase):
+    owner_id:int
+
+    class config:
+        orm_mode=True

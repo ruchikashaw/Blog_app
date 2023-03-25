@@ -90,3 +90,22 @@ def create_upvote(upvotes:schema.Upvotecreate, user:int,db:Session):
         db.refresh(db_upvote)
         
     return schema.blogupvote(upvote=db_upvote.upvote,downvote=db_upvote.downvote,blog_id=db_upvote.blog_id, owner_id=user)
+
+def create_bookmark(bookmarks:schema.bookmarkbase, user: int, db:Session):
+    blog = db.query(models.Blogs).filter(models.Blogs.id==bookmarks.blog_id).first()
+    if blog is None:
+        raise HTTPException(status_code=404, detail="Blog not found")
+    db_bookmark = db.query(models.Bookmark).filter(models.Bookmark.owner_id==user, models.Bookmark.blog_id==blog.id).first()
+    if db_bookmark is None:
+        db_bookmark = models.Bookmark(Bookmark=bookmarks.Bookmark, owner_id=user, blog_id=bookmarks.blog_id)
+        db.add(db_bookmark)
+        db.commit()
+        db.refresh(db_bookmark)
+        print(db_bookmark)
+    else:
+        db_bookmark.Bookmark=bookmarks.Bookmark
+        db.add(db_bookmark)
+        db.commit()
+        db.refresh(db_bookmark)
+
+    return schema.bookmarkCreate(Bookmark=db_bookmark.Bookmark,blog_id=db_bookmark.blog_id, owner_id=user)

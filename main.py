@@ -136,3 +136,7 @@ def get_comment(user:str = Depends(JWTBearer()) ,skip:int =0, limit:int=100,  db
 @app.post("/blogupvote", response_model=schema.blogupvote)
 def create_upvote(upvotes:schema.Upvotecreate,user:int=Depends(JWTBearer()), db:Session=Depends(get_db)):
     return crud.create_upvote(upvotes,user,db)
+
+@app.post("/bookmark", response_model=schema.bookmarkCreate)
+def create_bookmark(bookmark:schema.bookmarkbase,user:int = Depends(JWTBearer()),db:Session=Depends(get_db)):
+    return crud.create_bookmark(bookmark,user,db)
